@@ -1,27 +1,20 @@
-# @package _global_
-tags: null #["ViZDoom-Two-Colors"]
-project_name: "AReLiT-ViZDoom-Two-Colors-Pillar"
+tags: null
+project_name: AReLiT-ViZDoom-Two-Colors-Pillar
 seed: 1
 steps: 100000000
 log_interval: 10000
-
 eval_interval: 1000000
-
 eval_episodes: 10
-# eval_only: false
 videos: true
 record_fps: 30
-
 save_interval: 10000000
-
-save_dir: "./checkpoints/arelit_doom_with_pillar"
-save_tag: "arelit_doom_with_pillar"
-task: 
-  task: "vizdoom_two_colors"
-  env_name: "doom_with_pillar"
+save_dir: ./checkpoints/arelit_doom_with_pillar
+save_tag: arelit_doom_with_pillar
+task:
+  task: vizdoom_two_colors
+  env_name: doom_with_pillar
   max_episode_steps: 4200
   seed: null
-
 trainer:
   agent: ppo
   seq_model:
@@ -47,19 +40,17 @@ trainer:
   update_epochs: 1
   norm_adv: true
   clip_coef: 0.1
-  # TODO value_clip_coef: 1.0
-  ent_coef: 
-    initial:  0.003
-    final:  null
+  ent_coef:
+    initial: 0.003
+    final: null
     max_decay_steps: 10000
     power: 1
   vf_coef: 0.5
   max_grad_norm: 4.0
-  optimizer: 
-    learning_rate: 
+  optimizer:
+    learning_rate:
       initial: 0.00025
       final: null
       max_decay_steps: 10000
       power: 1.0
-
 use_wandb: true

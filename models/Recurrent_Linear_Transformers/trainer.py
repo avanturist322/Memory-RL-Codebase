@@ -72,8 +72,6 @@ def main(config: DictConfig):
             'wandb_run':run}
     
     trainer=task_to_trainer[env_config['task']](**kwargs)
-    print(111111111111111111)
-    print(trainer)
 
     pbar = tqdm(total=config.steps)
     step_count=0

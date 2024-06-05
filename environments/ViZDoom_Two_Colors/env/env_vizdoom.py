@@ -207,8 +207,8 @@ class DoomEnvironmentDisappear(object):
     def seed(self, seed=None):
         if seed is not None: self.game.set_seed(seed)
 
-    def reset(self):
-
+    def reset(self, seed=None, options=None):
+        self.seed(seed)
         self.game.new_episode()
 
         self.player_info = self.PlayerInfo(
@@ -248,6 +248,7 @@ class DoomEnvironmentDisappear(object):
 
         #obs['prev_r'] = np.zeros(1, dtype=np.float32)
         #obs['prev_a'] = np.zeros(1, dtype=np.float32)
+
         return obs
 
     def get_image(self):

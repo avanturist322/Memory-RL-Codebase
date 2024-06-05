@@ -93,6 +93,7 @@ class ControlTrainer(BaseTrainer):
         eval_env = AutoResetWrapper(eval_env_fn())
         if self.global_config.get("videos", False):
             eval_env = RecordRollout(eval_env)
+
         train_envs.reset(seed=train_seeds)
         eval_env.reset(seed=eval_seeds)
         logger.info("Observation space: "+str(eval_env.observation_space))
