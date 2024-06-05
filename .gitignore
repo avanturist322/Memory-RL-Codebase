@@ -1,2 +1,38 @@
+# output
+*.png
+*.jpg
+*.mp4
+*.gif
+*.txt
+!requirements.txt
 
+*.csv
+*._csv
+*.npz
+*.zip
+
+# weigths
+*.pth
+*.pickle
+
+
+*.pyc
+
+# !tests/
+
+*.ipynb_checkpoints
+
+# *.ipynb
+wandb/
 __pycache__/
+*.ini
+*_vizdoom.ini
+_vizdoom/
+*wandb_personal_config.yaml
+
+*.vscode
+logdir/
+
+# 9x9/
+# iterative_data/
+# MinigridMemory_data/
