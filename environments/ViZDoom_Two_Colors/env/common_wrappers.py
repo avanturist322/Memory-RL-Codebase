@@ -1,25 +1,25 @@
 # NOTE: this code was mainly taken from:
 import gym
 #from algos.training_utils import to_onehot, batchify
-import torch
+# import torch
 import numpy as np
 from collections import deque
 from gym import spaces
 #ImgObsWrapper returns 'image' value from dict observations
 # from gym_minigrid.wrappers import ImgObsWrapper
 
-def batchify(input, add_time_dim=False, device=None, dtype=None):
+# def batchify(input, add_time_dim=False, device=None, dtype=None):
 
-    if not isinstance(input, list):
-        input = [input]
+#     if not isinstance(input, list):
+#         input = [input]
 
-    def convert(e):
-        e = torch.as_tensor(e, device=device, dtype=dtype)
-        if add_time_dim:
-            e = e.unsqueeze(dim=0)
-        return e
+#     def convert(e):
+#         e = torch.as_tensor(e, device=device, dtype=dtype)
+#         if add_time_dim:
+#             e = e.unsqueeze(dim=0)
+#         return e
 
-    return  [convert(e) for e in input]
+#     return  [convert(e) for e in input]
 
 
 class FrameStack(gym.Wrapper):
@@ -177,110 +177,110 @@ class PrevActionAndReward(gym.Wrapper):
         return self._make_obs(obs), reward, done, info
 
 
-class AddMemory(gym.Wrapper):
-    """
-    Adds state of a learned memory model as one of observations.
-    """
-    def __init__(self, env, memory_model):
-        super(AddMemory, self).__init__(env)
-        self.is_vec_env = hasattr(env, 'num_envs')
-        self.num_envs = getattr(env, 'num_envs', 1)
+# class AddMemory(gym.Wrapper):
+#     """
+#     Adds state of a learned memory model as one of observations.
+#     """
+#     def __init__(self, env, memory_model):
+#         super(AddMemory, self).__init__(env)
+#         self.is_vec_env = hasattr(env, 'num_envs')
+#         self.num_envs = getattr(env, 'num_envs', 1)
 
-        self.model = memory_model
-        self.device = self.model.device
-        self.model.eval()
+#         self.model = memory_model
+#         self.device = self.model.device
+#         self.model.eval()
 
-        self.memory_state = None
+#         self.memory_state = None
 
-        # number of input channels may depends on framestack
-        # self._input_channels = self.model.input_shape[0]
-        self.observation_space = self._make_obs_space()
+#         # number of input channels may depends on framestack
+#         # self._input_channels = self.model.input_shape[0]
+#         self.observation_space = self._make_obs_space()
 
-        if isinstance(self.env.observation_space, spaces.Dict):
-            self._make_obs = self._update_dict_obs
-            self._add_done = self._add_done_to_dict_obs
-        else:
-            self._make_obs = self._create_dict_obs_from_vector
-            self._add_done = self._add_done_to_vector_obs
+#         if isinstance(self.env.observation_space, spaces.Dict):
+#             self._make_obs = self._update_dict_obs
+#             self._add_done = self._add_done_to_dict_obs
+#         else:
+#             self._make_obs = self._create_dict_obs_from_vector
+#             self._add_done = self._add_done_to_vector_obs
 
-    def _update_dict_obs(self, obs, memory):
-        obs['memory'] = memory
-        return obs
+#     def _update_dict_obs(self, obs, memory):
+#         obs['memory'] = memory
+#         return obs
 
-    def _create_dict_obs_from_vector(self, obs, memory):
-        return {
-            'observation': obs,
-            'memory': memory,
-        }
+#     def _create_dict_obs_from_vector(self, obs, memory):
+#         return {
+#             'observation': obs,
+#             'memory': memory,
+#         }
 
-    def _make_obs_space(self):
-        wrapped_space = self.env.observation_space
+#     def _make_obs_space(self):
+#         wrapped_space = self.env.observation_space
 
-        if isinstance(wrapped_space, spaces.Dict):
-            env_spaces = dict(wrapped_space.spaces)
-        else:
-            env_spaces = dict(observation=wrapped_space)
+#         if isinstance(wrapped_space, spaces.Dict):
+#             env_spaces = dict(wrapped_space.spaces)
+#         else:
+#             env_spaces = dict(observation=wrapped_space)
 
-        env_spaces['memory'] = spaces.Box(
-            low=float('-inf'),
-            high=float('inf'),
-            #can be updated to use outputs from all itermediate rnn-layers if needed
-            shape=(self.model.hidden_dim,),
-            dtype=np.float32
-        )
+#         env_spaces['memory'] = spaces.Box(
+#             low=float('-inf'),
+#             high=float('inf'),
+#             #can be updated to use outputs from all itermediate rnn-layers if needed
+#             shape=(self.model.hidden_dim,),
+#             dtype=np.float32
+#         )
 
-        return spaces.Dict(env_spaces)
+#         return spaces.Dict(env_spaces)
 
-    def reset(self, **kwargs):
-        obs = super().reset(**kwargs)
-        init_done = [False]*self.num_envs if self.is_vec_env else False
-        self.memory_state = self.model.init_state(self.num_envs)
-        h_t = self._update_memory(obs, init_done)
-        return self._make_obs(obs, h_t)
+#     def reset(self, **kwargs):
+#         obs = super().reset(**kwargs)
+#         init_done = [False]*self.num_envs if self.is_vec_env else False
+#         self.memory_state = self.model.init_state(self.num_envs)
+#         h_t = self._update_memory(obs, init_done)
+#         return self._make_obs(obs, h_t)
 
-    def step(self, action):
-        obs, reward, done, info = self.env.step(action)
-        h_t = self._update_memory(obs, done)
-        return self._make_obs(obs, h_t), reward, done, info
+#     def step(self, action):
+#         obs, reward, done, info = self.env.step(action)
+#         h_t = self._update_memory(obs, done)
+#         return self._make_obs(obs, h_t), reward, done, info
 
-    @torch.no_grad()
-    def _update_memory(self, obs, done=False):
-        out, self.memory_state = self.model(
-            self._preproc_obs(obs, done),
-            mem_state=self.memory_state,
-        )
-        return self._prepare_mem_for_obs(out)
+#     @torch.no_grad()
+#     def _update_memory(self, obs, done=False):
+#         out, self.memory_state = self.model(
+#             self._preproc_obs(obs, done),
+#             mem_state=self.memory_state,
+#         )
+#         return self._prepare_mem_for_obs(out)
 
-    def _prepare_mem_for_obs(self, memory):
-        memory = memory.cpu().squeeze(1)  # squeeze time dimension
-        if self.is_vec_env:
-            return memory
-        else:
-            return memory.squeeze(0)
+#     def _prepare_mem_for_obs(self, memory):
+#         memory = memory.cpu().squeeze(1)  # squeeze time dimension
+#         if self.is_vec_env:
+#             return memory
+#         else:
+#             return memory.squeeze(0)
 
-    def _add_done_to_dict_obs(self, obs, done):
-        obs = dict(obs)
-        obs['done'] = self._preproc_done(done)
-        return obs
+#     def _add_done_to_dict_obs(self, obs, done):
+#         obs = dict(obs)
+#         obs['done'] = self._preproc_done(done)
+#         return obs
 
-    def _add_done_to_vector_obs(self, obs, done):
-        return dict(
-            observation=obs,
-            done=self._preproc_done(done)
-        )
+#     def _add_done_to_vector_obs(self, obs, done):
+#         return dict(
+#             observation=obs,
+#             done=self._preproc_done(done)
+#         )
 
-    def _preproc_obs(self, obs, done):
-        obs = self._add_done(obs, done)
-        if not self.is_vec_env:
-            obs = {k:v[np.newaxis,:] for k,v in obs.items()}
+#     def _preproc_obs(self, obs, done):
+#         obs = self._add_done(obs, done)
+#         if not self.is_vec_env:
+#             obs = {k:v[np.newaxis,:] for k,v in obs.items()}
 
-        return {
-            k: torch.as_tensor(v).unsqueeze(1).to(self.device)
-            for k,v in obs.items()
-        }
+#         return {
+#             k: torch.as_tensor(v).unsqueeze(1).to(self.device)
+#             for k,v in obs.items()
+#         }
 
-    def _preproc_done(self, done):
-        if self.is_vec_env:
-            return np.asarray(done).reshape(-1,1)
-        else:
-            return np.full((1), done)
+#     def _preproc_done(self, done):
+#         if self.is_vec_env:
+#             return np.asarray(done).reshape(-1,1)
+#         else:
+#             return np.full((1), done)

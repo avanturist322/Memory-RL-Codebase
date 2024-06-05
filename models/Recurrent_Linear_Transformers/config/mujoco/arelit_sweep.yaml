@@ -1,0 +1,100 @@
+# program: sweeper.py
+method: random
+metric:
+  goal: maximize
+  name: reward_per_episode
+parameters:
+  tags: 
+    value: [HalfCheetah-v4]
+  project_name: 
+    value: ReLiT
+  seed: 
+    value: 1
+  steps: 
+    value: 5000000
+  log_interval: 
+    value: 10000
+  continuous_actions: 
+    value: true
+  task: 
+    parameters:
+      task: 
+        value: mujoco
+      env_name: 
+        value: HalfCheetah-v4
+      seed: 
+        value: null
+  trainer:
+    parameters:
+      agent: 
+        value: ppo
+      seq_model:
+        parameters:
+          name: 
+            value: arelit
+          n_layers: 
+            value: 4
+          d_model: 
+            value: 128
+          d_head: 
+            value: 64
+          d_ffc: 
+            value: 128
+          n_heads: 
+            value: 4
+          eta: 
+            value: 4
+          r: 
+            value: 2
+          reset_hidden_on_terminate: 
+            value: true
+      env_pool:  
+        value: async
+      d_actor: 
+        value: 256
+      d_critic: 
+        value: 256
+      num_envs: 
+        value: 8
+      rollout_len:
+        values: [128, 512, 2048]
+      sequence_length: 
+        value: null
+      gamma: 
+        value: 0.99
+      gae_lambda: 
+        value: 0.95
+      num_minibatches: 
+        value: 4
+      update_epochs: 
+        value: 10
+      norm_adv: 
+        value: true
+      clip_coef: 
+        value: 0.2
+      ent_coef:
+        parameters: 
+          initial:
+            values: [0.001, 0.01, 0.1]
+          final: 
+            value: null
+          max_decay_steps: 
+            value: 10000
+          power: 
+            value: 1
+      vf_coef: 
+        value: 0.5
+      max_grad_norm: 
+        values: [0.1, 0.5, 1.0]
+      optimizer:
+        parameters:
+          learning_rate:
+            parameters: 
+              initial: 
+                values: [0.000001, 0.00001, 0.0001]
+              final: 
+                value: null
+              max_decay_steps: 
+                value: 10000
+              power: 
+                value: 1.0

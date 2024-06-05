@@ -1,9 +1,7 @@
-# numpy==1.21.5
-# torch
 
-torch==2.2.0 --index-url https://download.pytorch.org/whl/cu118
-torchvision==0.17.0 --index-url https://download.pytorch.org/whl/cu118
-torchaudio==2.2.0 --index-url https://download.pytorch.org/whl/cu118
+# torch==2.2.0 --index-url https://download.pytorch.org/whl/cu118
+# torchvision==0.17.0 --index-url https://download.pytorch.org/whl/cu118
+# torchaudio==2.2.0 --index-url https://download.pytorch.org/whl/cu118
 
 gym==0.25.2
 vizdoom==1.2.2

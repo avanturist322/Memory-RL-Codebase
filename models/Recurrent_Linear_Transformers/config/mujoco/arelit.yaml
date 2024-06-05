@@ -1,0 +1,61 @@
+# @package _global_
+tags: ["HalfCheetah-v4"]
+project_name: "ReLiT"
+seed: 1
+steps: 100000000
+log_interval: 10000
+eval_interval: 1000000
+eval_episodes: 10
+# eval_only: false
+videos: true
+record_fps: 30
+# save_interval: 500000
+# save_dir: "./checkpoints"
+# save_tag: "arelit_half-cheetah-v4"
+continuous_actions: true
+task: 
+  task: "mujoco"
+  env_name: "HalfCheetah-v4"
+  max_episode_steps: 1000
+  seed: null
+
+trainer:
+  agent: ppo
+  seq_model:
+    name: arelit
+    n_layers: 3
+    d_model: 128
+    d_head: 64
+    d_ffc: 128
+    n_heads: 1
+    eta: 4
+    r: 2
+    reset_hidden_on_terminate: true
+  env_pool: async
+  d_actor: 128
+  d_critic: 128
+  num_envs: 8
+  rollout_len: 512
+  sequence_length: null
+  gamma: 0.99
+  gae_lambda: 0.95
+  num_minibatches: 4
+  update_epochs: 10
+  norm_adv: true
+  clip_coef: 0.2
+  value_clip_coef: null
+  ent_coef: 
+    initial: 0.0
+    final: null  # setting this to null results in no decay
+    max_decay_steps: 10000
+    power: 1
+  vf_coef: 0.5
+  max_grad_norm: 0.25
+  optimizer: 
+    learning_rate: 
+      initial: 0.0001
+      final: null  # setting this to null results in no decay
+      max_decay_steps: 10000
+      power: 1.0
+
+use_wandb: true

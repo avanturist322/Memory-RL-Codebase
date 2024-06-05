@@ -1,0 +1,59 @@
+[2024-06-05 21:55:47,392][jax._src.xla_bridge][INFO] - Unable to initialize backend 'cuda': 
+[2024-06-05 21:55:47,392][jax._src.xla_bridge][INFO] - Unable to initialize backend 'rocm': module 'jaxlib.xla_extension' has no attribute 'GpuAllocatorConfig'
+[2024-06-05 21:55:47,393][jax._src.xla_bridge][INFO] - Unable to initialize backend 'tpu': INTERNAL: Failed to open libtpu.so: libtpu.so: cannot open shared object file: No such file or directory
+[2024-06-05 21:55:47,454][__main__][INFO] - Starting Job for Config:
+tags:
+- tmaze-ours
+project_name: ReLiT
+seed: 1
+steps: 5000000
+log_interval: 10000
+eval_interval: 500000
+eval_episodes: 100
+eval_only: false
+videos: false
+record_fps: 5
+save_interval: 500000
+save_dir: ./checkpoints
+save_tag: arelit_tmaze-ours_l-160_g-4-1_t-01
+restore: false
+task:
+  task: tmaze_ours
+  max_episode_steps: 1000
+  corridor_len: 160
+  goal_reward: 4
+  goal_penalty: 1
+  timestep_penalty: 0.1
+  seed: null
+trainer:
+  agent: a2c
+  rollout_len: 256
+  num_envs: 8
+  seq_model:
+    name: arelit
+    n_layers: 4
+    d_model: 128
+    d_head: 64
+    d_ffc: 128
+    n_heads: 4
+    eta: 4
+    r: 2
+    reset_hidden_on_terminate: true
+  d_actor: 128
+  d_critic: 128
+  gamma: 0.99
+  gae_lambda: 0.95
+  ent_coef: 0.001
+  vf_coef: 0.5
+  max_grad_norm: 0.5
+  optimizer:
+    learning_rate: 0.0001
+  arg_max: false
+use_wandb: false
+
+[2024-06-05 21:55:47,454][__main__][INFO] - Available Backends:[CpuDevice(id=0)]
+[2024-06-05 21:55:47,500][src.trainers.trainers_control][INFO] - Using async env
+[2024-06-05 21:55:48,368][src.trainers.trainers_control][INFO] - Observation space: Box(-1.0, 1.0, (4,), float32)
+[2024-06-05 21:55:48,368][src.trainers.trainers_control][INFO] - Action space: Discrete(4)
+[2024-06-05 21:55:55,875][src.agents.base_agent][INFO] - Total Number of params: 1772741
+[2024-06-05 21:55:55,876][src.agents.base_agent][INFO] - Number of params in Seq Model: 1739072

@@ -17,6 +17,7 @@
 
 
 *.pyc
+*wandb_config.yaml
 
 # !tests/
 

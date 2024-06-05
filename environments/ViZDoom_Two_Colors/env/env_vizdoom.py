@@ -10,7 +10,9 @@ import argparse
 from itertools import count
 import time
 import gym
-from gym import spaces
+
+# from gym import spaces
+import gymnasium
 
 from ViZDoom_Two_Colors.env.common_wrappers import FrameStack, PrevActionAndReward #ImgObsWrapper
 from enum import IntEnum
@@ -356,23 +358,24 @@ class VizdoomAsGym(gym.Wrapper):
 
     def __init__(self, env):
         self.env = env
-        self.action_space = gym.spaces.Discrete(env.num_actions)
+        self.action_space = gymnasium.spaces.Discrete(env.num_actions)
         self.observation_space = self._make_obs_space()
         self.reward_range = (-2., 2.)
 
     def _make_obs_space(self):
         H,W = self.env.screen_height, self.screen_width
         img_shape = (3, H, W)
-        image_space = spaces.Box(0.0, 255.0, img_shape, dtype=np.uint8)
+        image_space = gymnasium.spaces.Box(0.0, 255.0, img_shape, dtype=np.uint8)
         # this low and high are scaled here! look at _make_obs method!
-        health_space= spaces.Box(0., 100., shape=[1,], dtype=np.float32)
-        shaping_reward_space = spaces.Box(-100., 100., shape=[1,], dtype=np.float32)
+        # health_space= spaces.Box(0., 100., shape=[1,], dtype=np.float32)
+        # shaping_reward_space = spaces.Box(-100., 100., shape=[1,], dtype=np.float32)
 
-        return spaces.Dict({
-            "image":image_space,
-            "health":health_space,
-            'shaping_reward':shaping_reward_space,
-        })
+        # return spaces.Dict({
+        #     "image":image_space,
+        #     "health":health_space,
+        #     'shaping_reward':shaping_reward_space,
+        # })
+        return image_space
 
     def render(self, mode='human', **kwargs):
         raise NotImplementedError()

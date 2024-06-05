@@ -1,0 +1,63 @@
+[2024-06-05 21:10:04,160][jax._src.xla_bridge][INFO] - Unable to initialize backend 'cuda': 
+[2024-06-05 21:10:04,160][jax._src.xla_bridge][INFO] - Unable to initialize backend 'rocm': module 'jaxlib.xla_extension' has no attribute 'GpuAllocatorConfig'
+[2024-06-05 21:10:04,161][jax._src.xla_bridge][INFO] - Unable to initialize backend 'tpu': INTERNAL: Failed to open libtpu.so: libtpu.so: cannot open shared object file: No such file or directory
+[2024-06-05 21:10:04,223][__main__][INFO] - Starting Job for Config:
+tags: null
+project_name: ReLiT
+seed: 1
+steps: 100000000
+log_interval: 10000
+eval_interval: 1000000
+eval_episodes: 10
+videos: true
+record_fps: 30
+save_interval: 10000000
+save_dir: ./checkpoints
+save_tag: arelit_doom_with_pillar
+task:
+  task: vizdoom_two_colors
+  env_name: doom_with_pillar
+  max_episode_steps: 4200
+  seed: null
+trainer:
+  agent: ppo
+  seq_model:
+    name: arelit
+    n_layers: 4
+    d_model: 512
+    d_head: 64
+    d_ffc: 512
+    n_heads: 8
+    eta: 4
+    r: 7
+    reset_hidden_on_terminate: true
+  env_pool: async
+  d_actor: 256
+  d_critic: 256
+  num_envs: 32
+  rollout_len: 200
+  sequence_length: 100
+  anneal_lr: false
+  gamma: 0.99
+  gae_lambda: 0.95
+  num_minibatches: 8
+  update_epochs: 1
+  norm_adv: true
+  clip_coef: 0.1
+  ent_coef:
+    initial: 0.003
+    final: null
+    max_decay_steps: 10000
+    power: 1
+  vf_coef: 0.5
+  max_grad_norm: 4.0
+  optimizer:
+    learning_rate:
+      initial: 0.00025
+      final: null
+      max_decay_steps: 10000
+      power: 1.0
+use_wandb: false
+
+[2024-06-05 21:10:04,224][__main__][INFO] - Available Backends:[CpuDevice(id=0)]
+[2024-06-05 21:10:04,270][src.trainers.trainers_control][INFO] - Using async env

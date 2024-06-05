@@ -1,0 +1,13 @@
+hydra-core
+wandb
+optax 
+rlax
+orbax-checkpoint
+gymnasium
+memory_gym
+tqdm
+flax
+moviepy 
+imageio
+mujoco
+# memory-maze

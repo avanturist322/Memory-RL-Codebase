@@ -1,0 +1,87 @@
+[2024-06-05 21:39:49,088][jax._src.xla_bridge][INFO] - Unable to initialize backend 'cuda': 
+[2024-06-05 21:39:49,088][jax._src.xla_bridge][INFO] - Unable to initialize backend 'rocm': module 'jaxlib.xla_extension' has no attribute 'GpuAllocatorConfig'
+[2024-06-05 21:39:49,089][jax._src.xla_bridge][INFO] - Unable to initialize backend 'tpu': INTERNAL: Failed to open libtpu.so: libtpu.so: cannot open shared object file: No such file or directory
+[2024-06-05 21:39:49,168][__main__][INFO] - Starting Job for Config:
+tags:
+- tmaze-ours
+project_name: ReLiT
+seed: 1
+steps: 5000000
+log_interval: 10000
+eval_interval: 500000
+eval_episodes: 100
+eval_only: false
+videos: false
+record_fps: 5
+save_interval: 500000
+save_dir: ./checkpoints
+save_tag: arelit_tmaze-ours_l-160_g-4-1_t-01
+restore: false
+task:
+  task: tmaze_ours
+  max_episode_steps: 1000
+  corridor_len: 160
+  goal_reward: 4
+  goal_penalty: 1
+  timestep_penalty: 0.1
+  seed: null
+trainer:
+  agent: a2c
+  rollout_len: 256
+  num_envs: 8
+  seq_model:
+    name: arelit
+    n_layers: 4
+    d_model: 128
+    d_head: 64
+    d_ffc: 128
+    n_heads: 4
+    eta: 4
+    r: 2
+    reset_hidden_on_terminate: true
+  d_actor: 128
+  d_critic: 128
+  gamma: 0.99
+  gae_lambda: 0.95
+  ent_coef: 0.001
+  vf_coef: 0.5
+  max_grad_norm: 0.5
+  optimizer:
+    learning_rate: 0.0001
+  arg_max: false
+use_wandb: false
+
+[2024-06-05 21:39:49,168][__main__][INFO] - Available Backends:[CpuDevice(id=0)]
+[2024-06-05 21:39:49,211][src.trainers.trainers_control][INFO] - Using async env
+[2024-06-05 21:39:50,160][src.trainers.trainers_control][INFO] - Observation space: Box(-1.0, 1.0, (4,), float32)
+[2024-06-05 21:39:50,160][src.trainers.trainers_control][INFO] - Action space: Discrete(4)
+[2024-06-05 21:39:57,571][src.agents.base_agent][INFO] - Total Number of params: 1772741
+[2024-06-05 21:39:57,572][src.agents.base_agent][INFO] - Number of params in Seq Model: 1739072
+[2024-06-05 21:39:57,754][absl][WARNING] - Configured `CheckpointManager` using deprecated legacy API. Please follow the instructions at https://orbax.readthedocs.io/en/latest/api_refactor.html to migrate by August 1st, 2024.
+[2024-06-05 21:39:57,756][absl][INFO] - Skipping global process sync, barrier name: CheckpointManager:create_directory
+[2024-06-05 21:39:57,756][absl][INFO] - Found 0 checkpoint steps in /home/jovyan/Egor_C/REPOSITORIES/Memory-RL-Codebase/checkpoints/arelit_tmaze-ours_l-160_g-4-1_t-01
+[2024-06-05 21:39:57,757][absl][INFO] - CheckpointManager created, jax.process_index=0, primary_host=0, CheckpointManagerOptions=CheckpointManagerOptions(save_interval_steps=1, max_to_keep=2, keep_time_interval=None, keep_period=None, best_fn=None, best_mode='max', keep_checkpoints_without_metrics=True, step_prefix=None, step_format_fixed_length=None, step_name_format=None, create=True, cleanup_tmp_directories=False, save_on_steps=frozenset(), single_host_load_and_broadcast=False, todelete_subdir=None, enable_background_delete=False, read_only=False, enable_async_checkpointing=True, async_options=AsyncOptions(timeout_secs=None, barrier_sync_fn=None, post_finalization_callback=None), multiprocessing_options=MultiprocessingOptions(primary_host=0, active_processes=None, barrier_sync_key_prefix=None), should_save_fn=None, file_options=FileOptions(path_permission_mode=None)), root_directory=/home/jovyan/Egor_C/REPOSITORIES/Memory-RL-Codebase/checkpoints/arelit_tmaze-ours_l-160_g-4-1_t-01: <orbax.checkpoint.checkpoint_manager.CheckpointManager object at 0x7fd2abc72910>
+[2024-06-05 21:41:39,648][__main__][INFO] - Seed: 1 Steps: 10240 Metrics: {'step': 10240, 'sps': 798.0795480296485, 'loss': -0.80552924, 'critic_loss': 2.5203044, 'actor_loss': -2.0643387, 'entropy_loss': -1.3429482, 'mean_reward': -0.10240001231431961, 'return_per_episode': -9.01005, 'success': 0.0, 'episode_length': 1000.0, 'reward_per_episode': -100.00000000000001}
+[2024-06-05 21:41:49,225][__main__][INFO] - Seed: 1 Steps: 20480 Metrics: {'step': 20480, 'sps': 1070.048574792277, 'loss': -0.82172555, 'critic_loss': 2.1545951, 'actor_loss': -1.8976886, 'entropy_loss': -1.3343527, 'mean_reward': -0.10240001231431961, 'return_per_episode': -9.01005, 'success': 0.0, 'episode_length': 1000.0, 'reward_per_episode': -100.00000000000001}
+[2024-06-05 21:41:59,674][__main__][INFO] - Seed: 1 Steps: 30720 Metrics: {'step': 30720, 'sps': 984.8451298267494, 'loss': -0.74963623, 'critic_loss': 1.987052, 'actor_loss': -1.7418445, 'entropy_loss': -1.3177173, 'mean_reward': -0.10158001631498337, 'return_per_episode': -8.8417015, 'success': 0.2222222222222222, 'episode_length': 955.7777777777778, 'reward_per_episode': -94.66666666666667}
+[2024-06-05 21:42:09,979][__main__][INFO] - Seed: 1 Steps: 40960 Metrics: {'step': 40960, 'sps': 1000.261138271953, 'loss': -0.71810496, 'critic_loss': 1.670544, 'actor_loss': -1.552075, 'entropy_loss': -1.3020996, 'mean_reward': -0.10194002091884613, 'return_per_episode': -8.893637, 'success': 0.125, 'episode_length': 946.75, 'reward_per_episode': -94.38750000000002}
+[2024-06-05 21:42:20,624][__main__][INFO] - Seed: 1 Steps: 51200 Metrics: {'step': 51200, 'sps': 970.4960502794653, 'loss': -0.6360505, 'critic_loss': 1.596616, 'actor_loss': -1.4330584, 'entropy_loss': -1.3001297, 'mean_reward': -0.10080001503229141, 'return_per_episode': -8.496194, 'success': 0.5, 'episode_length': 784.0, 'reward_per_episode': -76.79999999999998}
+[2024-06-05 21:42:31,559][__main__][INFO] - Seed: 1 Steps: 61440 Metrics: {'step': 61440, 'sps': 938.9869034580391, 'loss': -0.4550194, 'critic_loss': 1.5796349, 'actor_loss': -1.2435429, 'entropy_loss': -1.2939125, 'mean_reward': -0.0987500250339508, 'return_per_episode': -8.387445, 'success': 0.6666666666666666, 'episode_length': 780.1333333333333, 'reward_per_episode': -75.57999999999998}
+[2024-06-05 21:42:43,213][__main__][INFO] - Seed: 1 Steps: 71680 Metrics: {'step': 71680, 'sps': 883.3596239260451, 'loss': -0.3440025, 'critic_loss': 1.4193528, 'actor_loss': -1.0524144, 'entropy_loss': -1.2643768, 'mean_reward': -0.0995200127363205, 'return_per_episode': -7.9977164, 'success': 0.5, 'episode_length': 574.1111111111111, 'reward_per_episode': -55.8111111111111}
+[2024-06-05 21:42:54,639][__main__][INFO] - Seed: 1 Steps: 81920 Metrics: {'step': 81920, 'sps': 897.7424382050965, 'loss': -0.18690558, 'critic_loss': 1.2353191, 'actor_loss': -0.8033692, 'entropy_loss': -1.1959504, 'mean_reward': -0.1005600243806839, 'return_per_episode': -7.579717, 'success': 0.3333333333333333, 'episode_length': 440.875, 'reward_per_episode': -43.32083333333333}
+[2024-06-05 21:43:03,999][__main__][INFO] - Seed: 1 Steps: 90112 Metrics: {'step': 90112, 'sps': 878.8541442830845, 'loss': 0.40541452, 'critic_loss': 1.7475177, 'actor_loss': -0.46725407, 'entropy_loss': -1.090246, 'mean_reward': -0.07667001336812973, 'return_per_episode': -6.5974884, 'success': 0.6, 'episode_length': 341.68, 'reward_per_episode': -32.06799999999999}
+[2024-06-05 21:43:16,054][__main__][INFO] - Seed: 1 Steps: 100352 Metrics: {'step': 100352, 'sps': 852.9149568029613, 'loss': 0.8022647, 'critic_loss': 2.0007653, 'actor_loss': -0.19718555, 'entropy_loss': -0.93233967, 'mean_reward': -0.09541001915931702, 'return_per_episode': -5.938282, 'success': 0.5384615384615384, 'episode_length': 271.0769230769231, 'reward_per_episode': -25.315384615384612}
+[2024-06-05 21:43:28,375][__main__][INFO] - Seed: 1 Steps: 110592 Metrics: {'step': 110592, 'sps': 832.867530830226, 'loss': 1.3928733, 'critic_loss': 2.663439, 'actor_loss': 0.061859407, 'entropy_loss': -0.70563227, 'mean_reward': -0.09372001886367798, 'return_per_episode': -5.233335, 'success': 0.5416666666666666, 'episode_length': 218.22916666666666, 'reward_per_episode': -20.014583333333334}
+[2024-06-05 21:43:40,370][__main__][INFO] - Seed: 1 Steps: 120832 Metrics: {'step': 120832, 'sps': 865.8585362898896, 'loss': 1.5056156, 'critic_loss': 2.8325305, 'actor_loss': 0.08987729, 'entropy_loss': -0.52698094, 'mean_reward': -0.09417001903057098, 'return_per_episode': -4.9421043, 'success': 0.49056603773584906, 'episode_length': 194.47169811320754, 'reward_per_episode': -17.89433962264151}
+[2024-06-05 21:43:50,926][__main__][INFO] - Seed: 1 Steps: 131072 Metrics: {'step': 131072, 'sps': 971.2910992129852, 'loss': 1.5257733, 'critic_loss': 2.9268599, 'actor_loss': 0.06276441, 'entropy_loss': -0.42121854, 'mean_reward': -0.09294001758098602, 'return_per_episode': -4.6942325, 'success': 0.5178571428571429, 'episode_length': 184.28571428571428, 'reward_per_episode': -16.73928571428571}
+[2024-06-05 21:44:01,012][__main__][INFO] - Seed: 1 Steps: 141312 Metrics: {'step': 141312, 'sps': 1016.4524073559166, 'loss': 1.359572, 'critic_loss': 2.6343858, 'actor_loss': 0.04274153, 'entropy_loss': -0.362528, 'mean_reward': -0.09421001374721527, 'return_per_episode': -4.7484074, 'success': 0.4576271186440678, 'episode_length': 179.40677966101694, 'reward_per_episode': -16.55254237288135}
+[2024-06-05 21:44:10,919][__main__][INFO] - Seed: 1 Steps: 151552 Metrics: {'step': 151552, 'sps': 1037.0000969457233, 'loss': 1.1864512, 'critic_loss': 2.3936484, 'actor_loss': -0.010043232, 'entropy_loss': -0.3299092, 'mean_reward': -0.09444001317024231, 'return_per_episode': -4.686562, 'success': 0.4642857142857143, 'episode_length': 177.21428571428572, 'reward_per_episode': -16.299999999999997}
+[2024-06-05 21:44:20,936][__main__][INFO] - Seed: 1 Steps: 161792 Metrics: {'step': 161792, 'sps': 1023.7527897775369, 'loss': 1.3763953, 'critic_loss': 2.7321732, 'actor_loss': 0.010619953, 'entropy_loss': -0.3111881, 'mean_reward': -0.0906200185418129, 'return_per_episode': -4.3680897, 'success': 0.5862068965517241, 'episode_length': 175.68965517241378, 'reward_per_episode': -15.537931034482755}
+[2024-06-05 21:44:30,844][__main__][INFO] - Seed: 1 Steps: 172032 Metrics: {'step': 172032, 'sps': 1034.6497317217, 'loss': 1.4375535, 'critic_loss': 2.8645973, 'actor_loss': 0.005564076, 'entropy_loss': -0.30910134, 'mean_reward': -0.08971001952886581, 'return_per_episode': -4.2986937, 'success': 0.6101694915254238, 'episode_length': 175.11864406779662, 'reward_per_episode': -15.361016949152539}
+[2024-06-05 21:44:38,805][__main__][INFO] - Seed: 1 Steps: 180224 Metrics: {'step': 180224, 'sps': 1031.201781599581, 'loss': 1.5291018, 'critic_loss': 3.000627, 'actor_loss': 0.029093236, 'entropy_loss': -0.30479872, 'mean_reward': -0.06965000927448273, 'return_per_episode': -4.082813, 'success': 0.7021276595744681, 'episode_length': 175.08510638297872, 'reward_per_episode': -14.897872340425527}
+[2024-06-05 21:44:48,380][__main__][INFO] - Seed: 1 Steps: 190464 Metrics: {'step': 190464, 'sps': 1070.3526066174402, 'loss': 1.2472169, 'critic_loss': 2.5095503, 'actor_loss': -0.0072638565, 'entropy_loss': -0.29430765, 'mean_reward': -0.09262002259492874, 'return_per_episode': -4.5081344, 'success': 0.5172413793103449, 'episode_length': 174.27586206896552, 'reward_per_episode': -15.741379310344826}
+[2024-06-05 21:44:58,002][__main__][INFO] - Seed: 1 Steps: 200704 Metrics: {'step': 200704, 'sps': 1064.9420842123252, 'loss': 1.1000051, 'critic_loss': 2.2019463, 'actor_loss': -0.00067409425, 'entropy_loss': -0.29388988, 'mean_reward': -0.09662002325057983, 'return_per_episode': -4.817871, 'success': 0.3793103448275862, 'episode_length': 173.6551724137931, 'reward_per_episode': -16.368965517241374}
+[2024-06-05 21:45:07,589][__main__][INFO] - Seed: 1 Steps: 210944 Metrics: {'step': 210944, 'sps': 1068.9158040678453, 'loss': 1.4620993, 'critic_loss': 2.9180856, 'actor_loss': 0.0033689868, 'entropy_loss': -0.3124652, 'mean_reward': -0.09230002760887146, 'return_per_episode': -4.496944, 'success': 0.5166666666666667, 'episode_length': 173.81666666666666, 'reward_per_episode': -15.69833333333333}
+[2024-06-05 21:45:17,451][__main__][INFO] - Seed: 1 Steps: 221184 Metrics: {'step': 221184, 'sps': 1039.759498694481, 'loss': 1.2112731, 'critic_loss': 2.4919662, 'actor_loss': -0.034379177, 'entropy_loss': -0.33091894, 'mean_reward': -0.09562002122402191, 'return_per_episode': -4.7645326, 'success': 0.41379310344827586, 'episode_length': 175.08620689655172, 'reward_per_episode': -16.33965517241379}
+[2024-06-05 21:45:27,231][__main__][INFO] - Seed: 1 Steps: 231424 Metrics: {'step': 231424, 'sps': 1048.1887445601737, 'loss': 1.0436846, 'critic_loss': 2.1670063, 'actor_loss': -0.039526004, 'entropy_loss': -0.2925436, 'mean_reward': -0.09889001399278641, 'return_per_episode': -5.008058, 'success': 0.29508196721311475, 'episode_length': 173.0983606557377, 'reward_per_episode': -16.734426229508195}
+[2024-06-05 21:45:37,533][__main__][INFO] - Seed: 1 Steps: 241664 Metrics: {'step': 241664, 'sps': 995.3089597518153, 'loss': 1.2074804, 'critic_loss': 2.4359372, 'actor_loss': -0.010249968, 'entropy_loss': -0.2383099, 'mean_reward': -0.09512002021074295, 'return_per_episode': -4.6394925, 'success': 0.43103448275862066, 'episode_length': 170.72413793103448, 'reward_per_episode': -15.817241379310342}
