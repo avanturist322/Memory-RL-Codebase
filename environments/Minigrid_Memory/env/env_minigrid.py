@@ -5,7 +5,6 @@ from gym import spaces
 from gym_minigrid.wrappers import *
 from gym_minigrid.minigrid import *
 
-
 class Minigrid:
     def __init__(self, name, length):
         self._env = gym.make(name)
@@ -62,7 +61,7 @@ class Minigrid:
         return obs
 
     def step(self, action):
-        obs, reward, done, info = self._env.step(action[0])
+        obs, reward, done, info = self._env.step(action)
         self._rewards.append(reward)
         obs = obs.astype(np.float32) / 255.
 
@@ -90,6 +89,14 @@ class Minigrid:
         self._env.close()
 
 
+# class SingleActionWrapper(Minigrid):
+#     def __init__(self, env):
+#         super().__init__(env)
+#         self.env = env
+
+#     def step(self, action):
+#         return self.env.step((action, ))
+    
 def create_env(config:dict, length, render:bool=False):
     """Initializes an environment based on the provided environment name.
     
@@ -107,8 +114,10 @@ def create_env(config:dict, length, render:bool=False):
     # if config["type"] == "CartPoleMasked":
     #     return CartPole(mask_velocity=True)
     if config["type"] == "Minigrid":
+        env = Minigrid(config["name"], length)
+        # env = SingleActionWrapper(env)
     # if 'minigrid' in config['type'].lower():
-        return Minigrid(config["name"], length)
+        return env
     # if config["type"] in ["SearingSpotlights", "MortarMayhem", "MortarMayhem-Grid", "MysteryPath", "MysteryPath-Grid"]:
     #     return MemoryGymWrapper(env_name = config["name"], reset_params=config["reset_params"], realtime_mode=render)
 
