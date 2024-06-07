@@ -37,16 +37,28 @@ class MPEasyWrapper(gym.Wrapper):
             }
         obs, info = self.env.reset(seed = seed, return_info = True, options = options)
         return obs, info
+    
+class FiveToFourWrapper(gym.Wrapper):
+    def __init__(self, env):
+        super().__init__(env)
+
+    def step(self, action):
+        state, reward, done, _, info = self.env.step(action)
+
+        return state, reward, done, info
 
 def make_mmgrid():
     # see the section below explaining arguments
     env=gym.make("MysteryPath-Grid-v0")
+    
+    env = FiveToFourWrapper(env)
     return env
 
 def make_mmgrid_easy():
     # see the section below explaining arguments
     env=gym.make("MysteryPath-Grid-v0")
     env=MPEasyWrapper(env)
+    env = FiveToFourWrapper(env)
     return env
 
 
@@ -54,6 +66,7 @@ def make_mm():
     # see the section below explaining arguments
     env=gym.make("MysteryPath-v0")
     env=MultiDiscreteToDiscreteWrapper(env)
+    env = FiveToFourWrapper(env)
     return env
 
 def make_mm_easy():
@@ -61,6 +74,7 @@ def make_mm_easy():
     env=gym.make("MysteryPath-v0")
     env=MPEasyWrapper(env)
     env=MultiDiscreteToDiscreteWrapper(env)
+    env = FiveToFourWrapper(env)
     return env
 
 
