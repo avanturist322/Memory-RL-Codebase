@@ -1,0 +1,5 @@
+memory-gym==1.0.2
+gymnasium==0.29.0
+matplotlib==3.9.0
+moviepy==1.0.3
+opencv-python
