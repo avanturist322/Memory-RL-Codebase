@@ -14,8 +14,8 @@ record_fps: 30
 
 save_interval: 1000000 # 10000000
 
-save_dir: "./checkpoints/arelit_doom_with_pillar_eta_8_r_1"
-save_tag: "arelit_doom_with_pillar"
+save_dir: "./checkpoints/relit_doom_with_pillar"
+save_tag: "relit_doom_with_pillar"
 task: 
   task: "vizdoom_two_colors"
   env_name: "doom_with_pillar"
@@ -23,22 +23,25 @@ task:
   seed: null
 
 trainer:
-  agent: ppo
+  agent: a2c
+  rollout_len: 200
+  num_envs: 32
   seq_model:
-    name: arelit
+    name: relit
     n_layers: 4
     d_model: 512
     d_head: 64
     d_ffc: 512
     n_heads: 8
-    eta: 8 # 4
-    r: 1 # 7
+    update_rule: projected_sigmoid
+    flow: gtrxl
+    kernel:
+      name: pp_relu
+      nu: 2
     reset_hidden_on_terminate: true
-  env_pool: async
   d_actor: 256
   d_critic: 256
-  num_envs: 32
-  rollout_len: 200
+
   sequence_length: 100
   anneal_lr: false
   gamma: 0.99
@@ -47,19 +50,11 @@ trainer:
   update_epochs: 1
   norm_adv: true
   clip_coef: 0.1
-  # TODO value_clip_coef: 1.0
-  ent_coef: 
-    initial:  0.003
-    final:  null
-    max_decay_steps: 10000
-    power: 1
+
+  ent_coef: 0.003
   vf_coef: 0.5
   max_grad_norm: 4.0
-  optimizer: 
-    learning_rate: 
-      initial: 0.00025
-      final: null
-      max_decay_steps: 10000
-      power: 1.0
+  optimizer:
+    learning_rate: 0.0001
 
 use_wandb: true

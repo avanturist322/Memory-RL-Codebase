@@ -133,8 +133,11 @@ class DoomEnvironmentDisappear(object):
 
     def _create_game(self, scenario, show_window, get_extra_info=False):
         game = DoomGame()
-
-        game.load_config(scenario)
+        
+        try:
+            game.load_config(scenario)
+        except:
+            game.load_config('../../' + scenario)
 
         game.set_screen_resolution(self.screen_resolution)
 

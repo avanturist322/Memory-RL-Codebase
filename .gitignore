@@ -37,3 +37,6 @@ logdir/
 # 9x9/
 # iterative_data/
 # MinigridMemory_data/
+
+checkpoints/
+outputs/

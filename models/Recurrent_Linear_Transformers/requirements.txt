@@ -1,9 +1,12 @@
+# gym==0.25.2
+# jax==0.4.28
+
 hydra-core
 wandb
 optax 
 rlax
 orbax-checkpoint
-gymnasium
+gymnasium # ==0.29.1
 memory_gym
 tqdm
 flax

@@ -11,6 +11,13 @@ import gymnasium as gym
 import time
 import logging
 
+import os
+import sys
+current_dir = os.path.dirname(__file__)
+parent_dir = os.path.dirname(current_dir)
+parent_dir = os.path.dirname(parent_dir)
+sys.path.append(parent_dir)
+
 from src.trainers.base_trainer import BaseTrainer
 from src.tasks.tmaze import create_tmazev2, create_tmaze_ours
 from src.tasks.memory_gym_env import  create_memorygym_env
