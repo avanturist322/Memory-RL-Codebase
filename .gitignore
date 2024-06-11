@@ -4,6 +4,7 @@
 *.mp4
 *.gif
 *.txt
+!env_configs
 !requirements.txt
 
 *.csv
