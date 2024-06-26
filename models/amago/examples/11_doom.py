@@ -3,15 +3,21 @@ from argparse import ArgumentParser
 import wandb
 
 import amago
-from amago.envs.builtin.gym_envs import POPGymEnv
+
+
+from amago.envs.builtin.doom import DoomGymEnv
+#np.random.seed(seed)
+
+
 from amago.cli_utils import *
 
 
 def add_cli(parser):
-    parser.add_argument("--env", type=str, default="AutoencodeEasy")
-    parser.add_argument("--max_seq_len", type=int, default=2000)
+    parser.add_argument("--env", type=str, default="ViZDoom-Two-Colors")
+    parser.add_argument("--max_seq_len", type=int, default=4200)
     parser.add_argument("--traj_save_len", type=int, default=2000)
     parser.add_argument("--naive", action="store_true")
+    parser.add_argument("--horizon", type=int, required=True)
     return parser
 
 
@@ -23,7 +29,7 @@ if __name__ == "__main__":
 
     config = {
         # no need to risk numerical instability when returns are this bounded
-        "amago.agent.Agent.reward_multiplier": 100.0,
+        # "amago.agent.Agent.reward_multiplier": 100.0,
     }
     turn_off_goal_conditioning(config)
     switch_traj_encoder(
@@ -34,15 +40,23 @@ if __name__ == "__main__":
         # NOTE: paper used layers=3
         layers=args.memory_layers,
     )
-    switch_tstep_encoder(config, arch="ff", n_layers=2, d_hidden=512, d_output=200)
-    if args.naive:
-        naive(config)
+    # ! arch - 'ff'
+    switch_tstep_encoder(config, arch="ff", n_layers=2, d_hidden=512, d_output=256)
+    # switch_tstep_encoder(config, arch="cnn", 
+    #                     #  n_layers=2, d_hidden=512, d_output=256, 
+    #                      channels_first=True)
+    # if args.naive:
+    #     naive(config)
     use_config(config, args.configs)
 
     group_name = f"{args.run_name}_{args.env}"
     for trial in range(args.trials):
         run_name = group_name + f"_trial_{trial}"
-        make_train_env = lambda: POPGymEnv(f"popgym-{args.env}-v0")
+
+        # make_train_env = lambda: POPGymEnv(f"popgym-{args.env}-v0")
+
+        make_train_env = lambda: DoomGymEnv(args.env, args.horizon)
+
         experiment = create_experiment_from_cli(
             args,
             make_train_env=make_train_env,
@@ -53,8 +67,9 @@ if __name__ == "__main__":
             traj_save_len=args.traj_save_len,
             group_name=group_name,
             run_name=run_name,
-            val_timesteps_per_epoch=2000,
+            val_timesteps_per_epoch=4200 * 4,
         )
+
         experiment.start()
         if args.ckpt is not None:
             experiment.load_checkpoint(args.ckpt)
@@ -62,3 +77,10 @@ if __name__ == "__main__":
         experiment.load_checkpoint(loading_best=True)
         experiment.evaluate_test(make_train_env, timesteps=20_000, render=False)
         wandb.finish()
+
+
+"""
+ python3 models/amago/examples/11_doom.py --env ViZDoom-Two-Colors --parallel_actors 24 --trials 3 --epochs 500 --dset_max_size 5_000 --memory_layers 3 --memory_size 256 --gpu 0 --run_name amago_doom_h2100 --buffer_dir checkpoints/amago --ckpt_interval 20 --val_interval 20 --traj_encoder transformer --horizon 2100 --traj_save_len 4200 --max_seq_len 4200
+"""
+
+# pip install torch==1.13.1+cu117 torchvision==0.14.1+cu117 torchaudio==0.13.1 --extra-index-url https://download.pytorch.org/whl/cu117

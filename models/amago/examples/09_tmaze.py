@@ -99,7 +99,7 @@ if __name__ == "__main__":
             val_timesteps_per_epoch=args.horizon + 1,
             sample_actions=False,  # even softmax prob .999 isn't good enough for this env...
             exploration_wrapper_Cls=TMazeExploration,
-            batch_size=18 if args.horizon > 5000 else 24,
+            # batch_size=18 if args.horizon > 5000 else 24,
         )
         experiment.start()
         if args.ckpt is not None:
@@ -110,3 +110,8 @@ if __name__ == "__main__":
             make_train_env, timesteps=args.horizon * 5, render=False
         )
         wandb.finish()
+
+'''
+
+python3 models/amago/examples/ 09_tmaze.py --no_async --memory_size 128 --memory_layers 2 --parallel_actors 36 --horizon 400 --timesteps_per_epoch 800  --grads_per_epoch 600 --dset_max_size 5000 --gpu 0 --run_name amago_tmaze_ff_h400 --buffer_dir checkpoints/amago --traj_encoder transformer --trials 3
+'''

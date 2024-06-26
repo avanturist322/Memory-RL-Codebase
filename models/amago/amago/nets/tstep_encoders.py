@@ -114,6 +114,8 @@ class CNNTstepEncoder(TstepEncoder):
             obs_space=obs_space, goal_space=goal_space, rl2_space=rl2_space
         )
         obs_shape = self.obs_space["observation"].shape
+        # print('='*50)
+        # print(obs_shape)
         self.cnn = cnn_Cls(
             img_shape=obs_shape,
             channels_first=channels_first,

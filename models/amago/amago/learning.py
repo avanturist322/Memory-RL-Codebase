@@ -14,6 +14,7 @@ import numpy as np
 from tqdm import tqdm
 from einops import repeat
 import gymnasium as gym
+import yaml
 import gin
 
 from . import utils
@@ -28,6 +29,7 @@ from amago.envs.env_utils import (
 )
 from .loading import Batch, TrajDset, RLData_pad_collate, MAGIC_PAD_VAL
 from .hindsight import Relabeler, RelabelWarning
+
 
 
 @gin.configurable
@@ -92,9 +94,11 @@ class Experiment:
 
     def start(self):
         self.DEVICE = torch.device(f"cuda:{self.gpu}" if self.gpu >= 0 else "cpu")
+
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             self.init_envs()
+        
         self.init_dsets()
         self.init_dloaders()
         self.init_model()
@@ -174,11 +178,22 @@ class Experiment:
             # save gcrl2 space here to make model later
             self.gcrl2_space = env.gcrl2_space
             return env
+        # print('1'*50)
 
         Par = gym.vector.AsyncVectorEnv if self.async_envs else DummyAsyncVectorEnv
         make_train_env = partial(_make_env, self.make_train_env, "train")
+
+
+        # env = make_train_env()
+        # obs, _  = env.reset(seed=2)
+        # print(obs)
+
+
+        # print('2'*50)
         self.train_envs = Par([make_train_env for _ in range(self.parallel_actors)])
+        # print('3'*50)
         self.train_envs.reset()
+        # print('4'*50)
         if not self.share_train_val_envs:
             make_val_env = partial(_make_env, self.make_val_env, "val")
             self.val_envs = Par([make_val_env for _ in range(self.parallel_actors)])
@@ -230,6 +245,7 @@ class Experiment:
         torch.save(state_dict, os.path.join(self.ckpt_dir, ckpt_name))
 
     def init_dsets(self):
+        
         if self.save_trajs_as != "trajectory" and self.relabel != "none":
             warnings.warn(
                 "Saving data in efficient ('frozen') format... these files will be skipped by the Relabeler",
@@ -252,6 +268,7 @@ class Experiment:
             items_per_epoch=self.val_checks_per_epoch * self.batch_size,
             max_seq_len=self.max_seq_len,
         )
+        
 
     def init_dloaders(self):
         self.train_dset.refresh_files()
@@ -278,6 +295,10 @@ class Experiment:
         with open(config_path, "w") as f:
             f.write(gin_config)
         if self.log_to_wandb:
+            with open("wandb_config.yaml") as f:
+                wandb_config = yaml.load(f, Loader=yaml.FullLoader)
+                os.environ['WANDB_API_KEY'] = wandb_config['wandb_api']
+
             log_dir = self.wandb_log_dir or os.path.join(self.dset_root, "wandb_logs")
             if not os.path.exists(log_dir):
                 os.makedirs(log_dir)

@@ -44,20 +44,35 @@ class CNN(nn.Module, ABC):
 
     def forward(self, obs, from_float: bool = False, flatten: bool = True):
         assert obs.ndim == 5
+
+        # vizdoom = False
+        # if obs.shape == (1,1,3,64,112):
+        #     vizdoom = True
+
         if not from_float:
+            # if not vizdoom:
             assert obs.dtype == torch.uint8
             obs = (obs.float() / 128.0) - 1.0
+            # else:
+            #     obs = (obs.float() / 255.0) - 1.0
+
+
         if not self.channels_first:
             B, L, H, W, C = obs.shape
             img = rearrange(obs, "b l h w c -> (b l) c h w")
         else:
             B, L, C, H, W = obs.shape
             img = rearrange(obs, "b l c h w -> (b l) c h w")
+
+
         features = self.conv_forward(img)
         if flatten:
             features = rearrange(features, "(b l) c h w -> b l (c h w)", l=L)
         else:
             features = rearrange(features, "(b l) c h w -> b l c h w", l=L)
+
+        # print('*'*50)
+        # print(img.shape)
         return features
 
 
@@ -86,6 +101,9 @@ class NatureishCNN(CNN):
         super().__init__(
             img_shape, channels_first=channels_first, activation=activation
         )
+        # if img_shape == (3, 64, 112):
+        #     C = 3
+        # else:
         C = img_shape[0] if self.channels_first else img_shape[-1]
         self.conv1 = nn.Conv2d(C, 32, kernel_size=8, stride=4)
         self.conv2 = nn.Conv2d(32, 64, kernel_size=4, stride=2)
@@ -93,6 +111,8 @@ class NatureishCNN(CNN):
         self.apply(weight_init)
 
     def conv_forward(self, imgs):
+        # print('CONV FORWARD '*5)
+        # print(imgs.shape)
         x = self.activation(self.conv1(imgs))
         x = self.activation(self.conv2(x))
         x = self.activation(self.conv3(x))
