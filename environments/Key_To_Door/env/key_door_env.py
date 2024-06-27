@@ -54,8 +54,8 @@ class KeyDoorEnv(base_environment.BaseEnvironment):
         self._rewards_state: np.ndarray
         self._keys_state: np.ndarray
 
-        if seed is not None:
-            self.seed(seed)
+        # if seed is not None:
+        #     self.seed(seed)
 
         super().__init__(
             representation=representation,
@@ -68,13 +68,16 @@ class KeyDoorEnv(base_environment.BaseEnvironment):
             batch_dimension=batch_dimension,
             torch_axes=torch_axes,
         )
+        
+        self.map_ascii_path = map_ascii_path
+        self.map_yaml_path = map_yaml_path
 
-        self._setup_environment(
-            map_ascii_path=map_ascii_path, map_yaml_path=map_yaml_path
-        )
+        # self._setup_environment(
+        #     map_ascii_path=map_ascii_path, map_yaml_path=map_yaml_path
+        # )
 
-        # states are zero, -1 removes walls from counts.
-        self._visitation_counts = -1 * copy.deepcopy(self._map)
+        # # states are zero, -1 removes walls from counts.
+        # self._visitation_counts = -1 * copy.deepcopy(self._map)
 
     def _setup_environment(
         self, map_yaml_path: str, map_ascii_path: Optional[str] = None
@@ -608,7 +611,7 @@ class KeyDoorEnv(base_environment.BaseEnvironment):
         return not any(conditions)
 
     def reset(
-        self, train: bool = True, map_yaml_path: Optional[str] = None
+        self, seed: int = 42, options = None, train: bool = True, map_yaml_path: Optional[str] = None
     ) -> Tuple[int, int, int]:
         """Reset environment.
 
@@ -617,8 +620,17 @@ class KeyDoorEnv(base_environment.BaseEnvironment):
         Args:
             train: whether episode is for train or test (affects logging).
         """
-        if map_yaml_path is not None:
-            self._setup_environment(map_yaml_path=map_yaml_path)
+        self.seed(seed)
+
+        self._setup_environment(
+            map_ascii_path=self.map_ascii_path, map_yaml_path=self.map_yaml_path
+        )
+
+        # states are zero, -1 removes walls from counts.
+        self._visitation_counts = -1 * copy.deepcopy(self._map)
+        # if map_yaml_path is not None:
+        #     self._setup_environment(map_yaml_path=map_yaml_path)
+        
 
         self._active = True
         self._episode_step_count = 0

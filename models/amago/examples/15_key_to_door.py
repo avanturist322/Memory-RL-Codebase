@@ -5,7 +5,7 @@ import wandb
 import amago
 
 
-from amago.envs.builtin.mystery_path import MysteryPathGymEnv
+from amago.envs.builtin.key_to_door import KeyToDoorGymEnv
 #np.random.seed(seed)
 
 
@@ -14,6 +14,7 @@ from amago.cli_utils import *
 
 def add_cli(parser):
     parser.add_argument("--env", type=str, default="MysteryPath-Grid-v0")
+    parser.add_argument("--episode_timeout", type=int, default=120)
     parser.add_argument("--max_seq_len", type=int, default=4200)
     parser.add_argument("--traj_save_len", type=int, default=2000)
     parser.add_argument("--naive", action="store_true")
@@ -41,10 +42,10 @@ if __name__ == "__main__":
         layers=args.memory_layers,
     )
     # ! arch - 'ff'
-    # switch_tstep_encoder(config, arch="ff", n_layers=2, d_hidden=512, d_output=256)
-    switch_tstep_encoder(config, arch="cnn", 
-                         n_layers=2, d_hidden=256, d_output=256, 
-                         channels_first=False)
+    switch_tstep_encoder(config, arch="ff", n_layers=4, d_hidden=128, d_output=128)
+    # switch_tstep_encoder(config, arch="cnn", 
+    #                     #  n_layers=2, d_hidden=512, d_output=256, 
+    #                      channels_first=True)
     # if args.naive:
     #     naive(config)
     use_config(config, args.configs)
@@ -55,7 +56,7 @@ if __name__ == "__main__":
 
         # make_train_env = lambda: POPGymEnv(f"popgym-{args.env}-v0")
 
-        make_train_env = lambda: MysteryPathGymEnv(args.env, args.horizon) # "MysteryPath-Grid-v0"
+        make_train_env = lambda: KeyToDoorGymEnv(args.env, args.horizon, args.episode_timeout) # 'MiniGrid-MemoryS13Random-v0'
 
         experiment = create_experiment_from_cli(
             args,
@@ -80,7 +81,7 @@ if __name__ == "__main__":
 
 
 """
- python3 models/amago/examples/13_mystery_path.py --env 'MysteryPath-Grid-v0' --parallel_actors 1 --trials 3 --epochs 200 --dset_max_size 5_000 --memory_layers 3 --memory_size 256 --gpu 0 --run_name amago_mystery_path_h128 --buffer_dir checkpoints/amago --ckpt_interval 20 --val_interval 20 --traj_encoder transformer --horizon 128 --traj_save_len 128 --max_seq_len 128
+ python3 models/amago/examples/15_key_to_door.py --env 'Key-To-Door' --episode_timeout 300 --parallel_actors 24 --trials 3 --epochs 200 --dset_max_size 10_000 --memory_layers 3 --memory_size 256 --gpu 0 --run_name amago_key_to_door_h300 --buffer_dir checkpoints/amago --ckpt_interval 20 --val_interval 20 --traj_encoder transformer --horizon 300 --traj_save_len 300 --max_seq_len 300
 """
 
 # pip install torch==1.13.1+cu117 torchvision==0.14.1+cu117 torchaudio==0.13.1 --extra-index-url https://download.pytorch.org/whl/cu117
