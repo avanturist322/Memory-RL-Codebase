@@ -43,7 +43,6 @@ class CNN(nn.Module, ABC):
         pass
 
     def forward(self, obs, from_float: bool = False, flatten: bool = True):
-        print(obs.shape)
         assert obs.ndim == 5
 
         # vizdoom = False

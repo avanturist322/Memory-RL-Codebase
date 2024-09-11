@@ -43,7 +43,7 @@ if __name__ == "__main__":
     # ! arch - 'ff'
     # switch_tstep_encoder(config, arch="ff", n_layers=2, d_hidden=512, d_output=256)
     switch_tstep_encoder(config, arch="cnn", 
-                         n_layers=2, d_hidden=256, d_output=256, 
+                         n_layers=2, d_hidden=512, d_output=256, 
                          channels_first=False)
     # if args.naive:
     #     naive(config)

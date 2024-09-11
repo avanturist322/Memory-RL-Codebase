@@ -38,11 +38,11 @@ if __name__ == "__main__":
         arch=args.traj_encoder,
         # NOTE: paper (and original POPGym results) use `memory_size=256`
         memory_size=args.memory_size,
-        # NOTE: paper used layers=3
+        # NOTE: paper used layers3
         layers=args.memory_layers,
     )
     # ! arch - 'ff'
-    switch_tstep_encoder(config, arch="ff", n_layers=4, d_hidden=128, d_output=128)
+    switch_tstep_encoder(config, arch="ff", n_layers=2, d_hidden=512, d_output=256)
     # switch_tstep_encoder(config, arch="cnn", 
     #                     #  n_layers=2, d_hidden=512, d_output=256, 
     #                      channels_first=True)
