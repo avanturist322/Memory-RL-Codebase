@@ -1,0 +1,30 @@
+project_name: 'online_transformers'
+type: 'Bsuite'
+env: 'MemoryLength/15/1' #'MemoryLength/N/K' where N - memory len K - num bits (sequence len)
+# episode_len: 5
+context: 4
+seed: 1
+eval_mode: False
+disable_wandb: False
+time_limit: null
+model: 'DMQN'
+num_steps: 2000000
+tuf: 10000
+lr: 3.0e-4
+batch: 32
+buf_size: 500000 #5000000
+eval_frequency: 5000
+eval_episodes: 10
+device: 'cuda:0'
+obsembed: 8
+inembed: 64
+save_policy: False
+verbose: True
+render: False
+history: True
+heads: 8
+layers: 2
+dropout: 0
+gate: 'res' # 'gru'
+identity: False
+pos: 1  #choices=[1, 0, "sin"],

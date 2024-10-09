@@ -1,0 +1,61 @@
+environment:
+    type: "Bsuite"
+    name: "MemoryCardsEasy"
+    seed: 42
+    reset_params:
+    start-seed: 0
+    num-seeds: 100000
+    agent_scale: 0.25
+    cardinal_origin_choice: [0, 1, 2, 3]
+    show_origin: False
+    show_goal: False
+    visual_feedback: True
+    reward_goal: 1.0
+    reward_fall_off: 0.0
+    reward_path_progress: 0.0
+
+project_name: 'online_transformers'
+type: 'MemoryCards'
+log_name: 'MemoryCards/MemoryCardsEasy/TRXL/TRXL_MemoryCardsEasy_LONG_TERM'
+logger: 'tensorboard'
+device: 'cuda:1'
+eval_episodes: 100
+
+
+gamma: 0.99
+lamda: 0.95
+updates: 20000000
+save_model_steps: 1000
+eval_steps: 200
+epochs: 10
+n_workers: 16
+worker_steps: 512
+n_mini_batch: 8
+value_loss_coefficient: 0.1
+hidden_layer_size: 128
+max_grad_norm: 0.5
+transformer:
+    embed_per_obs_dim: 8
+    num_blocks: 4
+    embed_dim: 128
+    num_heads: 4
+    memory_length: 15 # 32
+    positional_encoding: "" # options: "" "relative" "learned"
+    layer_norm: "pre" # options: "" "pre" "post"
+    gtrxl: False
+    gtrxl_bias: 0.0
+learning_rate_schedule:
+    initial: 3.0e-4
+    final: 3.0e-4
+    power: 1.0
+    max_decay_steps: 200
+beta_schedule:
+    initial: 0.001
+    final: 0.0001
+    power: 1.0
+    max_decay_steps: 200
+clip_range_schedule:
+    initial: 0.2
+    final: 0.2
+    power: 1.0
+    max_decay_steps: 200

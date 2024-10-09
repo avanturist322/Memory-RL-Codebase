@@ -1,0 +1,33 @@
+project_name: 'online_transformers'
+type: 'POPGym'
+env: 'ConcentrationMedium'
+log_name: 'POPGym/Concentration/ConcentrationMedium/DTQN/DTQN_ConcentrationMedium_SHORT_TERM'
+logger: 'tensorboard'
+
+
+seed: 42
+context: 208
+eval_mode: False
+disable_wandb: False
+time_limit: null
+model: 'DTQN'
+num_steps: 2000000
+tuf: 10000
+lr: 3.0e-4
+batch: 32
+buf_size: 500000 #5000000
+eval_frequency: 5000
+eval_episodes: 100
+device: 'cuda:0'
+obsembed: 8
+inembed: 128
+save_policy: False
+verbose: True
+render: False
+history: True
+heads: 8
+layers: 2
+dropout: 0
+gate: 'res' # 'gru'
+identity: False
+pos: 1  #choices=[1, 0, "sin"],

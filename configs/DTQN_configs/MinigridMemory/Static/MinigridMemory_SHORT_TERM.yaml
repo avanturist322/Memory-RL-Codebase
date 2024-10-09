@@ -1,0 +1,39 @@
+project_name: 'online_transformers'
+type: 'MiniGrid-MemoryS13-v0'
+env: 'MiniGrid-MemoryS13-v0'
+log_name: 'MinigridMemory/MinigridMemory/DTQN/DTQN_MinigridMemory_SHORT_TERM_static'
+logger: 'tensorboard'
+length: 31
+
+
+eval_frequency: 500
+save_model: True
+save_best_model: True
+save_model_frequency: 500
+
+seed: 324241
+context: 60
+# disable_wandb: False
+eval_mode: False
+time_limit: null
+model: 'DTQN'
+num_steps: 1000000000
+tuf: 10000
+lr: 3.0e-4
+batch: 32
+buf_size: 1000 #5000000
+prepopulate_steps: 1000
+eval_episodes: 5
+device: 'cuda:1'
+obsembed: 8
+inembed: 64
+save_policy: False
+verbose: True
+render: False
+history: True
+heads: 4
+layers: 4
+dropout: 0
+gate: 'res' # 'gru'
+identity: False
+pos: 1  #choices=[1, 0, "sin"],

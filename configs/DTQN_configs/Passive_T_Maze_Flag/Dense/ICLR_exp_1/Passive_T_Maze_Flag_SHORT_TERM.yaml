@@ -1,0 +1,51 @@
+project_name: 'online_transformers'
+type: 'Passive_T_Maze_Flag'
+env: 'Passive_T_Maze_Flag'
+log_name: 'Passive_T_Maze_Flag/DTQN/DTQN_Passive_T_Maze_Flag_SHORT_TERM_dense'
+logger: 'tensorboard'
+
+# env parameters
+episode_timeout: 15
+corridor_length: 13
+goal_reward: 1
+penalty: -0.0714
+
+
+context: 15
+seed: 1337
+eval_mode: False
+time_limit: null
+model: 'DTQN'
+num_steps: 2000000
+tuf: 10000
+lr: 3.0e-4
+batch: 128
+buf_size: 50000 #5000000
+prepopulate_steps: 50000
+eval_episodes: 5
+# eval_seeds: [0,2,3,4,6,9,13,15,18,24,25,31,3,40,41,42,43,44,48,49,50,
+#               51,62,63,64,65,66,69,70,72,73,74,75,83,84,85,86,87,88,91,
+#               92,95,96,97,98,100,102,105,106,107,1,5,7,8,10,11,12,14,16,
+#               17,19,20,21,22,23,26,27,28,29,30,32,34,35,36,37,38,39,45,
+#               46,47,52,53,54,55,56,57,58,59,60,61,67,68,71,76,77,78,79,80,81,82]
+
+
+eval_frequency: 1000
+save_model: True
+save_best_model: True
+save_model_frequency: 500
+
+
+device: 'cuda:1'
+obsembed: 8
+inembed: 64
+save_policy: False
+verbose: True
+render: False
+history: True
+heads: 8
+layers: 8
+dropout: 0.1
+gate: 'res' # 'gru'
+identity: False
+pos: 1  #choices=[1, 0, "sin"],

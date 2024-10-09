@@ -4,9 +4,11 @@ import gym
 from gym import spaces
 from gym_minigrid.wrappers import *
 from gym_minigrid.minigrid import *
+from collections.abc import Iterable
+
 
 class Minigrid:
-    def __init__(self, name, length):
+    def __init__(self, name, length = 31):
         self._env = gym.make(name)
 
         self._env.height = length
@@ -32,15 +34,15 @@ class Minigrid:
 
         self._env = ImgObsWrapper(self._env)
 
-        self._observation_space = spaces.Box(
+        self.observation_space = spaces.Box(
                 low = 0,
                 high = 1.0,
                 shape = (3, hw, hw),
                 dtype = np.float32)
 
-    @property
-    def observation_space(self):
-        return self._observation_space
+
+        self.observation_space.obs_shape = self.observation_space.shape 
+        self.observation_space.obs_type = 'image'
 
     @property
     def action_space(self):
@@ -60,7 +62,17 @@ class Minigrid:
         obs = np.swapaxes(obs, 2, 1)
         return obs
 
+    def seed(self, seed):
+        self._env.seed(np.random.randint(0, 9999) if seed is None else seed)
+
     def step(self, action):
+
+        if isinstance(action, Iterable):
+            if len(action) == 1:
+                action = action[0]
+
+
+
         obs, reward, done, info = self._env.step(action)
         self._rewards.append(reward)
         obs = obs.astype(np.float32) / 255.
@@ -72,7 +84,7 @@ class Minigrid:
             info = {"reward": sum(self._rewards),
                     "length": len(self._rewards)}
         else:
-            info = None
+            info = {}
         # To conform PyTorch requirements, the channel dimension has to be first.
         obs = np.swapaxes(obs, 0, 2)
         obs = np.swapaxes(obs, 2, 1)

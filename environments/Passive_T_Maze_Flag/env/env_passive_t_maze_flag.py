@@ -1,5 +1,8 @@
 import numpy as np
 import gym
+import gymnasium
+from collections.abc import Iterable
+
 
 
 """
@@ -51,7 +54,10 @@ class TMazeBase(gym.Env):
         assert corridor_length >= 1 and episode_length >= 1
         assert penalty <= 0.0
 
+        self._rewards = []
+
         self.episode_length = episode_length
+        self.max_episode_steps = episode_length
         self.corridor_length = corridor_length
         self.oracle_length = oracle_length
 
@@ -82,10 +88,13 @@ class TMazeBase(gym.Env):
         if self.add_timestep:
             obs_dim += 1
 
-        self.observation_space = gym.spaces.Box(
-            low=-1.0, high=1.0, shape=(obs_dim,), dtype=np.float32
-        )
-        
+        # self.observation_space = gym.spaces.Box(
+        #     low=-1.0, high=1.0, shape=(obs_dim,), dtype=np.float32
+        # )
+        self.observation_space = gymnasium.spaces.MultiDiscrete(nvec = [3, 3, 2, 3], start=[-1, -1, 0, -1])
+        self.observation_space.obs_shape = self.observation_space.shape 
+        self.observation_space.obs_type = 'multidiscrete'
+
         if seed is not None:
             self.seed(seed)
 
@@ -179,7 +188,13 @@ class TMazeBase(gym.Env):
                 return rew
 
     def step(self, action):
+        info = {}
+        if isinstance(action, Iterable):
+            if len(action) == 1:
+                action = action[0]
+
         self.time_step += 1
+        #print(action)
         assert self.action_space.contains(action)
 
         # transition
@@ -194,11 +209,19 @@ class TMazeBase(gym.Env):
         else:
             done = False 
         
-        
+
         rew = self.reward_fn(done, self.x, self.y, self.goal_y)
-        return self.get_obs(), rew, done, {}
+        self._rewards.append(rew)
+
+        if done:
+            info = {"reward": sum(self._rewards),
+                    "length": len(self._rewards)}
+
+
+        return self.get_obs(), rew, done, info
 
     def reset(self, seed=None):
+
         if seed is not None:
             self.seed(seed)
     
@@ -207,6 +230,8 @@ class TMazeBase(gym.Env):
 
         self.oracle_visited = False
         self.time_step = 0
+        self._rewards = []
+
         return self.get_obs()
     
     def render(self):
@@ -214,6 +239,28 @@ class TMazeBase(gym.Env):
         frame[1-self.y, self.x, :] = 128
         frame[1-self.goal_y, self.corridor_length, :] = 255
         return frame
+
+    def visualize(self, trajectories: np.array, idx: str ='passive_t_maze_flag_vizualization'):
+        # from utils import logger
+
+        # trajectories: (B, T+1, O)
+        batch_size, seq_length, _ = trajectories.shape
+        xs = np.arange(seq_length)
+
+        for traj in trajectories:
+            # plot the 0-th element
+            plt.plot(xs, traj[:, 0])
+
+        plt.xlabel("Time Step")
+        plt.ylabel("Position X")
+        plt.show()
+        # plt.savefig(
+        #     os.path.join(logger.get_dir(), "plt", f"{idx}.png"),
+        #     dpi=200,  # 200
+        #     bbox_inches="tight",
+        #     pad_inches=0.1,
+        # )
+        plt.close()
 
 
 class TMazeClassicPassive(TMazeBase):

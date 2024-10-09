@@ -1,0 +1,36 @@
+project_name: 'online_transformers'
+type: 'Bsuite'
+env: 'MemoryLengthEasy' #MemoryLength/30/1 'MemoryLength/N/K' where N - memory len K - num bits (sequence len)
+log_name: 'Bsuite/MemoryLength/MemoryLengthEasy/DTQN/DTQN_MemoryLengthEasy_LONG_TERM'
+logger: 'tensorboard'
+
+
+
+
+# episode_len: 5
+context: 9
+seed: 42
+eval_mode: False
+disable_wandb: False
+time_limit: null
+model: 'DTQN'
+num_steps: 2000000
+tuf: 10000
+lr: 3.0e-4
+batch: 32
+buf_size: 500000 #5000000
+eval_frequency: 5000
+eval_episodes: 100
+device: 'cuda:0'
+obsembed: 8
+inembed: 128
+save_policy: False
+verbose: True
+render: False
+history: True
+heads: 8
+layers: 2
+dropout: 0
+gate: 'res' # 'gru'
+identity: False
+pos: 1  #choices=[1, 0, "sin"],
