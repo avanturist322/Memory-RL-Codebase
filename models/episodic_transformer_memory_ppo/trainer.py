@@ -16,6 +16,7 @@ from worker import Worker
 #import wandb
 import uuid
 import yaml
+import random
 
 def dict_to_markdown_table(config_dict):
     table = "| Parameter | Value |\n| --- | --- |\n"
@@ -23,14 +24,21 @@ def dict_to_markdown_table(config_dict):
         table += f"| {key} | {value} |\n"
     return table
 
+# general utils
+def set_seed(seed: int, deterministic_torch: bool = False):
+    os.environ["PYTHONHASHSEED"] = str(seed)
+    np.random.seed(seed)
+    random.seed(seed)
+    torch.manual_seed(seed)
+    #torch.use_deterministic_algorithms(deterministic_torch)
+
 
 class PPOTrainer:
-    def __init__(self, config:dict, run_id:str="run", device:torch.device=torch.device("cpu")) -> None:
+    def __init__(self, config:dict, device:torch.device=torch.device("cpu")) -> None:
         """Initializes all needed training components.
 
         Arguments:
             config {dict} -- Configuration and hyperparameters of the environment, trainer and model.
-            run_id {str, optional} -- A tag used to save Tensorboard Summaries and the trained model. Defaults to "run".
             device {torch.device, optional} -- Determines the training device. Defaults to cpu.
         """
         # init wandb logger synced with tensorboard
@@ -43,7 +51,6 @@ class PPOTrainer:
         self.device = device
         if self.device != torch.device("cpu"):
             torch.set_default_device(self.device)
-        self.run_id = run_id
         self.num_workers = config["n_workers"]
         self.lr_schedule = config["learning_rate_schedule"]
         self.beta_schedule = config["beta_schedule"]
@@ -68,12 +75,35 @@ class PPOTrainer:
 
 
 
+        # Seed everything 
+        print(f"Step 0: Seed everything with seed : {config['seed']}")
+        set_seed(seed = config['seed'])#, deterministic_torch = config['deterministic_torch'])
+
+
         # Init dummy environment to retrieve action space, observation space and max episode length
         print("Step 1: Init eval environment")
-        self.eval_env = create_env(self.config["environment"])
-        observation_space = self.eval_env.observation_space
-        self.action_space_shape = (self.eval_env.action_space.n,)
-        self.max_episode_length = self.eval_env.max_episode_steps
+        
+        if self.config["eval_static_and_random"]:
+            
+            static_env_config = self.config["environment"].copy()
+            static_env_config['environment_name'] = 'MiniGrid-MemoryS13-v0'
+
+            random_env_config = self.config["environment"].copy()
+            random_env_config['environment_name'] = 'MiniGrid-MemoryS13Random-v0'
+
+            self.eval_env_static = create_env(static_env_config)
+            self.eval_env_random = create_env(random_env_config)
+
+            observation_space = self.eval_env_static.observation_space
+            self.action_space_shape = (self.eval_env_static.action_space.n,)
+            self.max_episode_length = self.eval_env_static.max_episode_steps
+
+        else:
+            self.eval_env = create_env(self.config["environment"])
+
+            observation_space = self.eval_env.observation_space
+            self.action_space_shape = (self.eval_env.action_space.n,)
+            self.max_episode_length = self.eval_env.max_episode_steps
 
         start_info = '\n' + '#' * 10 + f''''\n
         [ENVIROMENT INFO]:\n
@@ -193,15 +223,28 @@ class PPOTrainer:
             print(episode_result["reward_mean"], max_episode_mean_reward, self.config['save_best_model'])
             print(self.config['save_model'], update % self.config['save_model_frequency'] == 0)
 
-            evaluation_stats = self._evaluate()
+
+            if self.config['eval_static_and_random']:
+                evaluation_stats_static = self._evaluate(self.eval_env_static)
+                evaluation_stats_random = self._evaluate(self.eval_env_random)
+            else:
+                evaluation_stats = self._evaluate(self.eval_env)
+
 
             # Write training statistics to tensorboard
-            curr_step = update * self.config["epochs"] * self.config["n_mini_batch"] 
+            curr_step = update * self.config["n_workers"] * self.config["worker_steps"] #update * self.config["epochs"] * self.config["n_mini_batch"] 
 
 
             self._write_gradient_summary(curr_step, grad_info)
             self._write_training_summary(curr_step, training_stats, episode_result)
-            self._write_evaluation_summary(curr_step, evaluation_stats)
+
+            if self.config['eval_static_and_random']:
+                self._write_evaluation_summary(curr_step, evaluation_stats_static, postfix = '_static')
+                self._write_evaluation_summary(curr_step, evaluation_stats_random, postfix = '_random')
+            else:
+                self._write_evaluation_summary(curr_step, evaluation_stats, postfix = '')
+
+
 
 
             if episode_result["reward_mean"] > max_episode_mean_reward and self.config['save_best_model']:
@@ -217,7 +260,7 @@ class PPOTrainer:
             if self.config['save_model'] and update % self.config['save_model_frequency'] == 0:
                 if not os.path.exists(os.path.join('../../checkpoints', self.config['log_name'])):
                     os.makedirs(os.path.join('../../checkpoints', self.config['log_name']))
-                self._save_model(os.path.join('../../checkpoints', self.config['log_name'], self.timestamp.strip('/') + '.pt'), episode_result, update)
+                self._save_model(os.path.join('../../checkpoints', self.config['log_name'], self.timestamp.strip('/') + f'_timestep_{curr_step}' + '.pt'), episode_result, update)
                 print('checkpoint saved!')
 
 
@@ -463,7 +506,7 @@ class PPOTrainer:
         memory_indices = torch.cat((repetitions, memory_indices))
         return memory, memory_mask, memory_indices
 
-    def _evaluate(self):
+    def _evaluate(self, eval_env):
 
         self.model.eval()
 
@@ -475,16 +518,16 @@ class PPOTrainer:
         for i in range(n_episode):
 
             done = False
-            memory, memory_mask, memory_indices = self.init_transformer_memory(self.config["transformer"], self.eval_env.max_episode_steps, self.device)
+            memory, memory_mask, memory_indices = self.init_transformer_memory(self.config["transformer"], eval_env.max_episode_steps, self.device)
             memory_length = self.config["transformer"]["memory_length"]
             eval_seeds = self.config.get("eval_seeds", None)
             t = 0
             ep_reward = 0
 
             if eval_seeds is not None:
-                obs = self.eval_env.reset(eval_seeds[i])    
+                obs = eval_env.reset(eval_seeds[i])    
             else:
-                obs = self.eval_env.reset()
+                obs = eval_env.reset()
 
 
 
@@ -505,7 +548,7 @@ class PPOTrainer:
                     action.append(action_branch.sample().item())
                 # Step environemnt
                 # print(f'action: {action}')
-                obs, reward, done, info = self.eval_env.step(action)
+                obs, reward, done, info = eval_env.step(action)
                 # print(f'Action :{action}, obs: {obs.shape}, reward: {reward}, terminated: {done}, info: {info}')
 
                 ep_reward += reward
@@ -557,11 +600,11 @@ class PPOTrainer:
         for key, value in grad_info.items():
             self.writer.add_scalar("training/gradients/" + key, np.mean(value), update)
 
-    def _write_evaluation_summary(self, update, evaluation_stats) -> None:
+    def _write_evaluation_summary(self, update, evaluation_stats, postfix = '') -> None:
 
-        self.writer.add_scalar("evaluation/Return", evaluation_stats[1], update)
-        self.writer.add_scalar("evaluation/Success_Rate", evaluation_stats[0], update)
-        self.writer.add_scalar("evaluation/Episode_Length", evaluation_stats[2], update)
+        self.writer.add_scalar("evaluation/Return" + postfix, evaluation_stats[1], update)
+        self.writer.add_scalar("evaluation/Success_Rate" + postfix, evaluation_stats[0], update)
+        self.writer.add_scalar("evaluation/Episode_Length" + postfix, evaluation_stats[2], update)
 
     def _save_model(self, checkpoint_path, episode_result, update_step) -> None:
         """Saves the model and the used training config to the models directory. The filename is based on the run id."""
