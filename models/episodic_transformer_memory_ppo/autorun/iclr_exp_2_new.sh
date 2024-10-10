@@ -1,7 +1,8 @@
 #!/bin/bash
 
 SESSION_NAME="iclr_exp_2_new_gtrxl"
-seeds=(123 213 321)
+seeds=(123 213 312)
+REPO_PATH="/home/jovyan/Egor_C/REPOSITORIES/Memory-RL-Codebase"
 
 tmux new-session -d -s $SESSION_NAME
 
@@ -10,13 +11,14 @@ for SEED in "${seeds[@]}"; do
     # K=8_L=21_random
     WINDOW_NAME="K=8_L=21_random_seed_${SEED}"
     tmux new-window -t $SESSION_NAME -n $WINDOW_NAME
-    tmux send-keys -t $SESSION_NAME:"$WINDOW_NAME" "export PYTHONPATH=\$PYTHONPATH:/opt/Memory-RL-Codebase" C-m
-
+    tmux send-keys -t $SESSION_NAME:"$WINDOW_NAME" "export PYTHONPATH=\$PYTHONPATH:\$REPO_PATH" C-m
+    tmux send-keys -t $SESSION_NAME:"$WINDOW_NAME" "conda activate /home/jovyan/.mlspace/envs/pudge" C-m
+    tmux send-keys -t $SESSION_NAME:"$WINDOW_NAME" "export PYTHONPATH=\$PYTHONPATH:\$REPO_PATH" C-m
     tmux send-keys -t $SESSION_NAME:$WINDOW_NAME "python3 ../train.py \
     --environment_name 'MiniGrid-MemoryS13Random-v0' \
     --environment_length 21 \
-    --log_name 'MinigridMemory/MinigridMemory/GTXL/iclr_exp_2_new/K=8_L=21_random' \
-    --device 'cuda:1' \
+    --log_name 'MinigridMemory/GTXL/iclr_exp_2_new/K=8_L=21_random' \
+    --device 'cuda:0' \
     --eval_episodes 100 \
     --save_model True \
     --save_model_frequency 30 \
@@ -30,12 +32,14 @@ for SEED in "${seeds[@]}"; do
     # K=21_L=21_random
     WINDOW_NAME="K=21_L=21_random_seed_${SEED}"
     tmux new-window -t $SESSION_NAME -n $WINDOW_NAME
-    tmux send-keys -t $SESSION_NAME:"$WINDOW_NAME" "export PYTHONPATH=\$PYTHONPATH:/opt/Memory-RL-Codebase" C-m
+    tmux send-keys -t $SESSION_NAME:"$WINDOW_NAME" "export PYTHONPATH=\$PYTHONPATH:\$REPO_PATH" C-m
+    tmux send-keys -t $SESSION_NAME:"$WINDOW_NAME" "conda activate /home/jovyan/.mlspace/envs/pudge" C-m
+    tmux send-keys -t $SESSION_NAME:"$WINDOW_NAME" "export PYTHONPATH=\$PYTHONPATH:\$REPO_PATH" C-m
     tmux send-keys -t $SESSION_NAME:$WINDOW_NAME "python3 ../train.py \
     --environment_name 'MiniGrid-MemoryS13Random-v0' \
     --environment_length 21 \
-    --log_name 'MinigridMemory/MinigridMemory/GTXL/iclr_exp_2_new/K=21_L=21_random' \
-    --device 'cuda:1' \
+    --log_name 'MinigridMemory/GTXL/iclr_exp_2_new/K=21_L=21_random' \
+    --device 'cuda:0' \
     --eval_episodes 100 \
     --save_model True \
     --save_model_frequency 30 \
@@ -49,12 +53,15 @@ for SEED in "${seeds[@]}"; do
     # K=8_L=21_fixed
     WINDOW_NAME="K=8_L=21_fixed_seed_${SEED}"
     tmux new-window -t $SESSION_NAME -n $WINDOW_NAME
-    tmux send-keys -t $SESSION_NAME:"$WINDOW_NAME" "export PYTHONPATH=\$PYTHONPATH:/opt/Memory-RL-Codebase" C-m
+    tmux send-keys -t $SESSION_NAME:"$WINDOW_NAME" "export PYTHONPATH=\$PYTHONPATH:\$REPO_PATH" C-m
+    tmux send-keys -t $SESSION_NAME:"$WINDOW_NAME" "conda activate /home/jovyan/.mlspace/envs/pudge" C-m
+    tmux send-keys -t $SESSION_NAME:"$WINDOW_NAME" "export PYTHONPATH=\$PYTHONPATH:\$REPO_PATH" C-m
+
     tmux send-keys -t $SESSION_NAME:$WINDOW_NAME "python3 ../train.py \
     --environment_name 'MiniGrid-MemoryS13-v0' \
     --environment_length 21 \
-    --log_name 'MinigridMemory/MinigridMemory/GTXL/iclr_exp_2_new/K=8_L=21_fixed' \
-    --device 'cuda:1' \
+    --log_name 'MinigridMemory/GTXL/iclr_exp_2_new/K=8_L=21_fixed' \
+    --device 'cuda:0' \
     --eval_episodes 100 \
     --save_model True \
     --save_model_frequency 30 \
@@ -68,12 +75,15 @@ for SEED in "${seeds[@]}"; do
     # K=21_L=21_fixed
     WINDOW_NAME="K=21_L=21_fixed_seed_${SEED}"
     tmux new-window -t $SESSION_NAME -n $WINDOW_NAME
-    tmux send-keys -t $SESSION_NAME:"$WINDOW_NAME" "export PYTHONPATH=\$PYTHONPATH:/opt/Memory-RL-Codebase" C-m
+    tmux send-keys -t $SESSION_NAME:"$WINDOW_NAME" "export PYTHONPATH=\$PYTHONPATH:\$REPO_PATH" C-m
+    tmux send-keys -t $SESSION_NAME:"$WINDOW_NAME" "conda activate /home/jovyan/.mlspace/envs/pudge" C-m
+    tmux send-keys -t $SESSION_NAME:"$WINDOW_NAME" "export PATH=\$PATH:\$REPO_PATH" C-m
+
     tmux send-keys -t $SESSION_NAME:$WINDOW_NAME "python3 ../train.py \
     --environment_name 'MiniGrid-MemoryS13-v0' \
     --environment_length 21 \
-    --log_name 'MinigridMemory/MinigridMemory/GTXL/iclr_exp_2_new/K=21_L=21_fixed' \
-    --device 'cuda:1' \
+    --log_name 'MinigridMemory/GTXL/iclr_exp_2_new/K=21_L=21_fixed' \
+    --device 'cuda:0' \
     --eval_episodes 100 \
     --save_model True \
     --save_model_frequency 30 \

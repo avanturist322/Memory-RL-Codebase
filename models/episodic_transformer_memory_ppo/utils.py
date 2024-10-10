@@ -14,12 +14,12 @@ from torch import nn
 # from environments.memory_cards_env import MemoryCards
 
 
-from environments.POPGym.popgym_env import POPGymWrapper
-#from environments.Wind.wind_env import WindEnv
-from environments.Bsuite.bsuite_env import BsuiteWrapper
-from environments.Passive_T_Maze_Flag.env.env_passive_t_maze_flag import TMazeClassicPassive
+# from environments.POPGym.popgym_env import POPGymWrapper
+# #from environments.Wind.wind_env import WindEnv
+# from environments.Bsuite.bsuite_env import BsuiteWrapper
+# from environments.Passive_T_Maze_Flag.env.env_passive_t_maze_flag import TMazeClassicPassive
 from environments.Minigrid_Memory.env.env_minigrid import Minigrid  
-from environments.MemoryCards.memory_cards_env import MemoryCards
+# from environments.MemoryCards.memory_cards_env import MemoryCards
 
 
 def create_env(config:dict, render:bool=False):
